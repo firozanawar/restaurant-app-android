@@ -76,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             requestPackage.setEndPoint(SECURE_JSON_URL);
              requestPackage.setParam("category","Desserts");
 
+            // For POST add below code else comment it for GET
+            requestPackage.setMethod("POST");
+
             /**
              * Start the intent service and
              * pass the URL to service to hit

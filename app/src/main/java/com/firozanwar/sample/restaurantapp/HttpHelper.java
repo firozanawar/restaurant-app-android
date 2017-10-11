@@ -6,6 +6,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -47,6 +48,16 @@ public class HttpHelper {
             //conn.setRequestMethod("GET");
             conn.setRequestMethod(requestPackage.getMethod());
             conn.setDoInput(true);
+
+            // For post add the below code
+            if (requestPackage.getMethod().equals("POST") && encodeParam.length() > 0) {
+               conn.setDoOutput(true);
+                OutputStreamWriter writer= new OutputStreamWriter(conn.getOutputStream());
+                 writer.write(requestPackage.getEncodedParams());
+                writer.flush();
+                writer.close();
+            }
+
             conn.connect();
 
             int responseCode = conn.getResponseCode();
