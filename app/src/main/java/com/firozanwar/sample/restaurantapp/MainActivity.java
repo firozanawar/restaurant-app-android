@@ -72,12 +72,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         if (Utils.hasNetworkStatus(this)) {
 
+            RequestPackage requestPackage=new RequestPackage();
+            requestPackage.setEndPoint(SECURE_JSON_URL);
+             requestPackage.setParam("category","Desserts");
+
             /**
              * Start the intent service and
              * pass the URL to service to hit
              */
             Intent startServiceIntent = new Intent(this, MyService.class);
-            startServiceIntent.setData(Uri.parse(SECURE_JSON_URL));
+            //startServiceIntent.setData(Uri.parse(SECURE_JSON_URL));
+
+            // Use this when you want to send request package detais like method, params etc
+            startServiceIntent.putExtra(MyService.REQUEST_PACKAGE,requestPackage);
             startService(startServiceIntent);
         } else {
             Toast.makeText(this, "No network available", Toast.LENGTH_SHORT).show();

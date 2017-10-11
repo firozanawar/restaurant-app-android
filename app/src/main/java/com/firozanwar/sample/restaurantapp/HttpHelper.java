@@ -21,23 +21,31 @@ public class HttpHelper {
      * @return
      * @throws IOException
      */
-    public static String downloadUrl(String address,String username,String password) throws IOException {
+    public static String downloadUrl(String address, String username, String password, RequestPackage requestPackage) throws IOException {
+
+        String endpoint = requestPackage.getEndpoint();
+        String encodeParam = requestPackage.getEncodedParams();
+        if (requestPackage.getMethod().equals("GET") && encodeParam.length() > 0) {
+            endpoint = String.format("%s?%s", endpoint, encodeParam);
+        }
+
 
         InputStream is = null;
 
         // Authentication
-        byte[] loginbytes=(username + ":" + password).getBytes();
-        StringBuilder loginBuilder=new StringBuilder()
+        byte[] loginbytes = (username + ":" + password).getBytes();
+        StringBuilder loginBuilder = new StringBuilder()
                 .append("Basic ")
-                .append(Base64.encodeToString(loginbytes,Base64.DEFAULT));
+                .append(Base64.encodeToString(loginbytes, Base64.DEFAULT));
         try {
 
-            URL url = new URL(address);
+            URL url = new URL(endpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.addRequestProperty("Authorization",loginBuilder.toString());
+            conn.addRequestProperty("Authorization", loginBuilder.toString());
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
-            conn.setRequestMethod("GET");
+            //conn.setRequestMethod("GET");
+            conn.setRequestMethod(requestPackage.getMethod());
             conn.setDoInput(true);
             conn.connect();
 

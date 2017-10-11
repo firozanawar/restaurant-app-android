@@ -7,6 +7,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.firozanwar.sample.restaurantapp.HttpHelper;
+import com.firozanwar.sample.restaurantapp.RequestPackage;
 import com.firozanwar.sample.restaurantapp.models.DataItem;
 import com.firozanwar.sample.restaurantapp.utils.Utils;
 import com.google.gson.Gson;
@@ -24,6 +25,7 @@ public class MyService extends IntentService {
     public static final String MY_SERVICE_MESSAGE = "myServiceMessage";
     public static final String MY_SERVICE_PAYLOAD = "myServicepayload";
     public static final String MY_SERVICE_EXCEPTION = "myServiceexception";
+    public static final String REQUEST_PACKAGE = "requestpackage";
 
     public MyService() {
         super("MyService");
@@ -38,12 +40,15 @@ public class MyService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
+        RequestPackage requestPackage=(RequestPackage)intent.getParcelableExtra(REQUEST_PACKAGE);
+
         String response="";
         Uri uri = intent.getData();
         Log.d(Utils.DEBUG_TAG, "onHandleIntent received data :: " + uri);
 
         try {
-            response = HttpHelper.downloadUrl(uri.toString(),"nadias","NadiasPassword");
+            //response = HttpHelper.downloadUrl(uri.toString(),"nadias","NadiasPassword");
+            response = HttpHelper.downloadUrl(null,"nadias","NadiasPassword",requestPackage);
         } catch (IOException e) {
             e.printStackTrace();
             Intent messageIntent = new Intent(MY_SERVICE_MESSAGE);
