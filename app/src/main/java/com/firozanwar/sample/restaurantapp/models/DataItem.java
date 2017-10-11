@@ -3,10 +3,10 @@ package com.firozanwar.sample.restaurantapp.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by firozanwar on 10/10/17.
- */
 
+/**
+ * Created by firozanwar on 11/10/17.
+ */
 public class DataItem implements Parcelable {
 
     /**

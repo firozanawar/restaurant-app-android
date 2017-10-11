@@ -5,9 +5,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 /**
- * Created by firozanwar on 10/10/17.
+ * Created by firozanwar on 11/10/17.
  */
-
 public class Utils {
 
     public static final String DEBUG_TAG="restaurantapp";
