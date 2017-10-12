@@ -17,7 +17,9 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
 import com.firozanwar.sample.restaurantapp.models.DataItem;
+import com.firozanwar.sample.restaurantapp.services.MyNewService;
 import com.firozanwar.sample.restaurantapp.services.MyService;
+import com.firozanwar.sample.restaurantapp.services.MyWebService;
 import com.firozanwar.sample.restaurantapp.utils.Utils;
 
 import java.io.IOException;
@@ -27,6 +29,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Map<String, Bitmap>> {
 
@@ -70,19 +76,22 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mRecyclerView = (RecyclerView) findViewById(R.id.rvItems);
 
 
-        if (Utils.hasNetworkStatus(this)) {
+        /*if (Utils.hasNetworkStatus(this)) {
 
             RequestPackage requestPackage=new RequestPackage();
-            requestPackage.setEndPoint(SECURE_JSON_URL);
-             requestPackage.setParam("category","Desserts");
+            // requestPackage.setEndPoint(SECURE_JSON_URL);  // Use for HttpURLConnection
+            requestPackage.setEndPoint(JSON_URL);
+             //requestPackage.setParam("category","Desserts");
 
             // For POST add below code else comment it for GET
-            requestPackage.setMethod("POST");
+            //requestPackage.setMethod("POST");
+            requestPackage.setMethod("GET");  // For OhHttp
+            //requestPackage.setMethod("POST");  // For OhHttp
 
-            /**
-             * Start the intent service and
-             * pass the URL to service to hit
-             */
+            *//**
+         * Start the intent service and
+         * pass the URL to service to hit
+         *//*
             Intent startServiceIntent = new Intent(this, MyService.class);
             //startServiceIntent.setData(Uri.parse(SECURE_JSON_URL));
 
@@ -91,11 +100,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             startService(startServiceIntent);
         } else {
             Toast.makeText(this, "No network available", Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
         // Register the broadcast to get the response from intent service
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mBroadcastReceiver,
                 new IntentFilter(MyService.MY_SERVICE_MESSAGE));
+
+        requestData();
+
+        //requestData("Desserts");
     }
 
     private void displayDataItems() {
@@ -133,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     /**
      * Lazy loading
-     *
+     * <p>
      * Download the images from different API based on some name.
      * Save these images in HasMap and then pass this to an adapter.
      * This is not recommaned because use has to wait untill all images downloaded and saved
@@ -172,5 +185,48 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
             return btm;
         }
+    }
+
+    private void requestData() {
+
+        // Synchronous requests with Retrofit
+       /* Intent startServiceIntent = new Intent(this, MyNewService.class);
+        startService(startServiceIntent);*/
+
+
+        // asynchronous requests with Retrofit
+        MyWebService myWebService = MyWebService.retrofit.create(MyWebService.class);
+        Call<DataItem[]> call = myWebService.dataitems();
+        SendRequest(call);
+    }
+
+    private void SendRequest(Call<DataItem[]> call) {
+        call.enqueue(new Callback<DataItem[]>() {
+            @Override
+            public void onResponse(Call<DataItem[]> call, Response<DataItem[]> response) {
+                DataItem[] dataItems = response.body();
+                Toast.makeText(MainActivity.this, dataItems.length + " received", Toast.LENGTH_LONG).show();
+                mListItem = Arrays.asList(dataItems);
+
+                /**
+                 * Case - when you want entire images to be downloaded and inserted into HashMap to display
+                 */
+                //getSupportLoaderManager().initLoader(0, null, MainActivity.this).forceLoad();
+
+                displayDataItems();
+            }
+
+            @Override
+            public void onFailure(Call<DataItem[]> call, Throwable t) {
+
+            }
+        });
+    }
+
+    // Send request parameters with Retrofit
+    private void requestData(String category) {
+        MyWebService myWebService = MyWebService.retrofit.create(MyWebService.class);
+        Call<DataItem[]> call = myWebService.dataitems(category);
+        SendRequest(call);
     }
 }

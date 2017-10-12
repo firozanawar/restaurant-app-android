@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firozanwar.sample.restaurantapp.models.DataItem;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +29,7 @@ public class DataItemAdapter extends RecyclerView.Adapter<DataItemAdapter.ViewHo
     private List<DataItem> mItems;
     private Context mContext;
     //private Map<String, Bitmap> mBitmapMap = new HashMap<>();
+    public static final String PHOTO_BASE_URL = "http://560057.youcanlearnit.net/services/images/";
 
     public DataItemAdapter(List<DataItem> mItems, Context mContext) {
         this.mItems = mItems;
@@ -78,14 +80,23 @@ public class DataItemAdapter extends RecyclerView.Adapter<DataItemAdapter.ViewHo
             /**
              * Getting images from cache.
              */
-            Bitmap bitmap = ImageCacheManager.getBitmap(mContext, item);
+           /* Bitmap bitmap = ImageCacheManager.getBitmap(mContext, item);
             if (bitmap == null) {
                 ImageDownloaderTask imageDownloaderTask = new ImageDownloaderTask();
                 imageDownloaderTask.setViewHolder(holder);
                 imageDownloaderTask.execute(item);
             } else {
                 holder.imageView.setImageBitmap(bitmap);
-            }
+            }*/
+
+            /**
+             * Case - Using Picasso
+             */
+            String imageurl = PHOTO_BASE_URL + item.getImage();
+            Picasso.with(mContext).load(imageurl).into(holder.imageView);
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
